@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense tracker</title>
+    <!-- <link rel="stylesheet" href="./style.css" /> -->
+  </head>
+  <body>
+    <header>
+      <h1>JS project Expense tracker</h1>
+    </header>
+    <section class="container">
+      <form id="my-form" onsubmit="onSubmit(event)">
+        <h1>Add Expenses</h1>
+        <div class="msg"></div>
+        <div>
+          <label for="quantity">Choose expense amount:</label>
+          <input type="number" id="amount" name="quantity" />
+        </div>
+        <div>
+          <label for="text">Description:</label>
+          <input type="text" name="description" id="description" />
+        </div>
+        <label for="category">Choose a category:</label>
+        <select name="category" id="category">
+          <option value="movie">movie</option>
+          <option value="food">food</option>
+          <option value="electricity_bill">electricity_bill</option>
+          <option value="shopping">shopping</option>
+        </select>
+        <input id="submit_btn" class="btn" type="submit" value="Add Expense" />
+      </form>
+      <ul id="userList"></ul>
+      <ul class="items">
+        <li id="item3" class="item"></li>
+      </ul>
+    </section>
+
+    <script>
+      const arr = [];
+      function onSubmit(event) {
+        event.preventDefault();
+        let amt = event.target.amount.value;
+        let desc = event.target.description.value;
+        let category = event.target.category.value;
+
+        let obj = { amt, desc, category };
+        arr.push(obj);
+        localStorage.setItem("details", JSON.stringify(obj));
+        displayDetails(obj);
+      }
+
+      function displayDetails(obj) {
+        const parentElement = document.getElementById("item3");
+        const child = document.createElement("li");
+        child.textContent = `expense_amt:${obj.amt},description:${obj.desc},category:${obj.category}`;
+        parentElement.appendChild(child);
+
+        //delete button
+        const btn = document.createElement("input");
+        btn.type = "button";
+        btn.value = "delete";
+        child.appendChild(btn);
+
+        btn.onclick = () => {
+          parentElement.removeChild(child);
+          localStorage.removeItem(obj.amt);
+        };
+        //edit button
+        const edit_btn = document.createElement("input");
+        edit_btn.type = "button";
+        edit_btn.value = "edit";
+        child.appendChild(edit_btn);
+
+        edit_btn.onclick = () => {
+          parentElement.removeChild(child);
+          localStorage.removeItem(obj.category);
+          document.getElementById("amount").value = obj.amt;
+          document.getElementById("description").value = obj.desc;
+          document.getElementById("category").value = obj.category;
+        };
+      }
+    </script>
+  </body>
+</html>
