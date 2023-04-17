@@ -47,7 +47,7 @@
         let category = event.target.category.value;
 
         let obj = { amt, desc, category };
-        arr.push(obj);
+
         localStorage.setItem("details", JSON.stringify(obj));
         displayDetails(obj);
       }
