@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense tracker</title>
+    <!-- <link rel="stylesheet" href="./style.css" /> -->
+  </head>
+  <body>
+    <header>
+      <h1>Making waiters life easy</h1>
+    </header>
+    <section class="container">
+      <form id="my-form" onsubmit="onSubmit(event)">
+        <div class="msg"></div>
+        <div>
+          <label for="quantity">Menu item Price</label>
+          <input type="number" id="amount" name="quantity" />
+        </div>
+        <div>
+          <label for="text">Choose menu item</label>
+          <input type="text" name="description" id="description" />
+        </div>
+        <label for="category">Choose a table</label>
+        <select name="category" id="category">
+          <option value="table1">Table 1</option>
+          <option value="table2">Table 2</option>
+          <option value="table3">Table 3</option>
+        </select>
+        <input id="submit_btn" class="btn" type="submit" value="Add item" />
+      </form>
+      <ul id="userList"></ul>
+      <div>
+        <div id="table1">table1</div>
+        <div id="table2">table2</div>
+        <div id="table3">table3</div>
+      </div>
+    </section>
+    <script>
+      const arr = [];
+      function onSubmit(event) {
+        event.preventDefault();
+        let amt = event.target.amount.value;
+        let desc = event.target.description.value;
+        let category = event.target.category.value;
+
+        let obj = { amt, desc, category };
+        axios
+          .post(
+            "https://crudcrud.com/api/7b804290a6e74852aae29a1cb0a5a545/orders",
+            obj
+          )
+          .then((res) => {
+            displayDetails(res.data);
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      window.addEventListener("DOMContentLoaded", () => {
+        axios
+          .get(
+            "https://crudcrud.com/api/7b804290a6e74852aae29a1cb0a5a545/orders"
+          )
+          .then((res) => {
+            console.log(res);
+            for (let i = 0; i < res.data.length; i++) {
+              if (res.data[i].category === "table1") {
+                displayDetails(res.data[i], "table1");
+              } else if (res.data[i].category === "table2") {
+                displayDetails(res.data[i], "table2");
+              } else if (res.data[i].category === "table3") {
+                displayDetails(res.data[i], "table3");
+              }
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+      function displayDetails(obj, tableId) {
+        const parentElement = document.getElementById(tableId);
+        const childElement = document.createElement("li");
+        childElement.textContent = `Table_no:${obj.category},Item:${obj.desc},Price:${obj.amt}`;
+        parentElement.appendChild(childElement);
+
+        //delete button
+        const btn = document.createElement("input");
+        btn.type = "button";
+        btn.value = "delete";
+        childElement.appendChild(btn);
+
+        btn.onclick = () => {
+          axios
+            .delete(
+              `https://crudcrud.com/api/7b804290a6e74852aae29a1cb0a5a545/orders/${obj._id}`
+            )
+            .then((res) => {
+              console.log("we have deleted", res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          parentElement.removeChild(childElement);
+        };
+      }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.js"></script>
+  </body>
+</html>
